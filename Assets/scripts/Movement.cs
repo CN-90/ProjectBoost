@@ -5,13 +5,32 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
     private Rigidbody rb;
-    
-    [SerializeField] float rotationThrust = 100f;
-    [SerializeField] float mainThrust = 100f;
+    private AudioSource audioSource;
+
+    [SerializeField]
+    float rotationThrust = 100f;
+
+    [SerializeField]
+    float mainThrust = 100f;
+
+    [SerializeField]
+    AudioClip mainEngine;
+
     // Start is called before the first frame update
+
+    [SerializeField]
+    ParticleSystem mainEngineParticles;
+
+    [SerializeField]
+    ParticleSystem leftEngineParticles;
+
+    [SerializeField]
+    ParticleSystem rightEngineParticles;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -19,35 +38,82 @@ public class Movement : MonoBehaviour
     {
         ProcessThrust();
         ProcessRotation();
-
     }
 
-    void ProcessThrust(){
-        if(Input.GetKey(KeyCode.Space)) 
+    void ProcessThrust()
+    {
+        if (Input.GetKey(KeyCode.Space))
         {
+            ThrustRocket();
             //use force to move upward
-            rb.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
-        };
+            PlayAudio(mainEngine);
+            PlayParticles(mainEngineParticles);
+        
+        }
+        else
+        {
+            DisableAudio();
+            DisableParticles(mainEngineParticles);
+        }
     }
 
-    void ProcessRotation(){
-        if(Input.GetKey(KeyCode.A))
+    void ProcessRotation()
+    {
+        if (Input.GetKey(KeyCode.A))
         {
             //use force to move left
             ApplyRotation(rotationThrust);
+            PlayParticles(rightEngineParticles);
         }
-        else if(Input.GetKey(KeyCode.D)) 
+        else if (Input.GetKey(KeyCode.D))
         {
+            PlayParticles(leftEngineParticles);
             //use force to move right
             ApplyRotation(-rotationThrust);
-        };
+        }
+        else
+        {
+            DisableParticles(rightEngineParticles);
+            DisableParticles(leftEngineParticles);
+        }
     }
 
     private void ApplyRotation(float rotationThisFrame)
     {
         // Freezing rotation so we can manually rotate
-        rb.freezeRotation = true; 
+        rb.freezeRotation = true;
         transform.Rotate(Vector3.forward * rotationThisFrame * Time.deltaTime);
-        rb.freezeRotation = false; 
+        rb.freezeRotation = false;
+    }
+
+    private void ThrustRocket()
+    {
+        rb.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
+    }
+
+    private void PlayAudio(AudioClip audio)
+    {
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(audio);
+        }
+    }
+
+    private void DisableAudio(){
+        audioSource.Stop();
+    }
+
+    private void DisableParticles(ParticleSystem particle)
+    {
+        particle.Stop();
+    }
+   
+
+    private void PlayParticles(ParticleSystem particle)
+    {
+        if (!particle.isPlaying)
+        {
+            particle.Play();
+        }
     }
 }
