@@ -1,11 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+
+
 
 public class Movement : MonoBehaviour
 {
     private Rigidbody rb;
     private AudioSource audioSource;
+    
 
     [SerializeField]
     float rotationThrust = 100f;
@@ -27,6 +28,12 @@ public class Movement : MonoBehaviour
     [SerializeField]
     ParticleSystem rightEngineParticles;
 
+    public Loader loader;
+    bool collisionOn = true;
+
+    
+    
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -38,6 +45,7 @@ public class Movement : MonoBehaviour
     {
         ProcessThrust();
         ProcessRotation();
+        DebugMode();
     }
 
     void ProcessThrust()
@@ -114,6 +122,16 @@ public class Movement : MonoBehaviour
         if (!particle.isPlaying)
         {
             particle.Play();
+        }
+    }
+
+    private void DebugMode(){
+        if(Input.GetKeyDown(KeyCode.L)){
+            loader.LoadNextScene();
+        }
+        if(Input.GetKeyDown(KeyCode.C)){
+            collisionOn = !collisionOn;
+            rb.detectCollisions = collisionOn;
         }
     }
 }

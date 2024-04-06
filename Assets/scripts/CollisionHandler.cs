@@ -17,6 +17,8 @@ public class CollisionHandler : MonoBehaviour
     [SerializeField] ParticleSystem crashParticles;
     [SerializeField] ParticleSystem successParticles;
 
+
+
     bool isTransitioning = false;
 
     private void Start()
@@ -87,4 +89,8 @@ public class CollisionHandler : MonoBehaviour
     {
         movement.enabled = false;
     }
+}
+
+public class SceneHandler
+{
 }
